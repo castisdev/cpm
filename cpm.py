@@ -3,6 +3,7 @@
 import sys
 import os
 import shutil
+sys.path.append('./simplejson/')
 import simplejson as json
 
 CPM_HOME = os.path.expanduser('~/.cpm')
