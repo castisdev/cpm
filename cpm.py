@@ -6,7 +6,7 @@ import shutil
 import simplejson as json
 
 CPM_HOME = os.path.expanduser('~/.cpm')
-CPM_SVN = 'https://github.com/castisdev/'
+CPM_GIT = 'https://github.com/castisdev/'
 
 def print_usage():
     print ''
@@ -59,8 +59,8 @@ def install(pkg):
 
 
 def install_from_svn(path, pkg):
-    uri = CPM_SVN + pkg + '/trunk'
-    cmd = 'svn checkout %s %s' % (uri, path)
+    uri = '%s/%s.git' % (CPM_GIT, pkg)
+    cmd = 'git clone --recursive %s %s' % (uri, path)
     print cmd
     r = os.system(cmd)
     if r != 0:
