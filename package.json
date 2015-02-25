@@ -1,0 +1,11 @@
+{
+  "name": "cpm",
+  "version": "0.1.0",
+  "description": "castis package manager",
+  "bin": {
+    "cpm": "./cpm.py"
+  },
+  "service": null,
+  "dependencies": null
+}
+
