@@ -11,6 +11,7 @@ except OSError:
 import simplejson as json
 
 CPM_HOME = os.path.expanduser('~/.cpm')
+CPM_BIN = os.path.expanduser('~/.cpm/bin')
 CPM_GIT = 'https://github.com/castisdev'
 
 def print_usage():
@@ -74,7 +75,7 @@ def install_from_git(path, pkg):
 
 def install_bins(path, bins):
     for k in bins.keys():
-        cmd = 'ln -sf %s/%s /usr/local/bin/%s' % (path, bins[k], k)
+        cmd = 'ln -sf %s/%s %s/%s' % (path, bins[k], CPM_BIN, k)
         r = os.system(cmd)
         if r != 0:
             print '[Error] command `%s` failed with code %d' % (cmd, r)
@@ -122,7 +123,7 @@ def remove(pkg):
 
 def remove_bins(path, bins):
     for k in bins.keys():
-        cmd = 'rm /usr/local/bin/%s' % k
+        cmd = 'rm %s/%s' % (CPM_BIN, k)
         os.system(cmd)
 
 
