@@ -6,7 +6,7 @@ import json
 import shutil
 import simplejson as json
 
-CPM_HOME = '~/.cpm'
+CPM_HOME = os.path.expanduser('~/.cpm')
 CPM_SVN = 'https://github.com/castisdev/'
 
 def print_usage():
@@ -29,7 +29,7 @@ def init():
 
 
 def initialized():
-    return os.path.isdir(CPM_HOME) 
+    return os.path.isdir(CPM_HOME)
 
 
 def check_init():
@@ -40,7 +40,7 @@ def check_init():
 
 def install(pkg):
     check_init()
-    path = os.path.expanduser(CPM_HOME + '/' + pkg)
+    path = CPM_HOME + '/' + pkg
     try:
         install_from_svn(path, pkg)
         if not os.path.exists(path + '/package.json'):
@@ -53,6 +53,9 @@ def install(pkg):
         print 'installed %s at: %s' % (pkg, path)
     except IOError:
         print '[Error] IOError occured. install failed'
+        shutil.rmtree(path)
+    except OSError:
+        print '[Error] OSError occured. install failed'
         shutil.rmtree(path)
 
 
@@ -67,27 +70,25 @@ def install_from_svn(path, pkg):
 
 def install_bins(path, bins):
     for k in bins.keys():
-        cmd = 'cp %s/%s /usr/local/bin/%s' % (path, bins[k], k)
+        cmd = 'ln -sf %s/%s /usr/local/bin/%s' % (path, bins[k], k)
         r = os.system(cmd)
         if r != 0:
             print '[Error] command `%s` failed with code %d' % (cmd, r)
-            raise IOError
+            raise OSError
 
 
 def list():
     check_init()
-    home = os.path.expanduser(CPM_HOME)
-    for s in os.listdir(home):
-        if os.path.isdir(home + '/' + s):
-            path = home + '/' + s
-            data = open(path + '/package.json')
+    for s in os.listdir(CPM_HOME):
+        if os.path.isdir(CPM_HOME + '/' + s):
+            data = open('%s/%s/package.json' % (CPM_HOME, s))
             j = json.load(data)
             print '%s@%s' % (j['name'], j['version'])
 
 
 def info(pkg):
     check_init()
-    info_path = os.path.expanduser('%s/%s/package.json' % (CPM_HOME, pkg))
+    info_path = '%s/%s/package.json' % (CPM_HOME, pkg)
     if os.path.exists(info_path):
         os.system('cat %s' % info_path)
     else:
@@ -96,7 +97,7 @@ def info(pkg):
 
 def remove(pkg):
     check_init()
-    path = os.path.expanduser(CPM_HOME + '/' + pkg)
+    path = CPM_HOME + '/' + pkg
     if not os.path.exists(path):
         print '[Error] %s not installed yet.'
         return
@@ -107,9 +108,12 @@ def remove(pkg):
             remove_bins(path, j['bin'])
         shutil.rmtree(path)
     except IOError:
-        print '[Error] IOError occured. install failed'
+        print '[Error] IOError occured. remove failed.'
         return
-    print 'removed %s.' % (pkg, path)
+    except OSError:
+        print '[Error] OSError occured. remove failed.'
+        return
+    print 'removed', pkg
 
 
 def remove_bins(path, bins):
