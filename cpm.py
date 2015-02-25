@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.readlink(__file__)) + '/simplejson/')
 import simplejson as json
 
 CPM_HOME = os.path.expanduser('~/.cpm')
-CPM_GIT = 'https://github.com/castisdev/'
+CPM_GIT = 'https://github.com/castisdev'
 
 def print_usage():
     print ''
