@@ -4,6 +4,7 @@ import sys
 import os
 import json
 import shutil
+import simplejson as json
 
 CPM_HOME = '~/.cpm'
 CPM_SVN = 'https://github.com/castisdev/'
