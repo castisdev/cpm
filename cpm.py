@@ -2,7 +2,6 @@
 
 import sys
 import os
-import json
 import shutil
 import simplejson as json
 
