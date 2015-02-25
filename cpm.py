@@ -3,7 +3,11 @@
 import sys
 import os
 import shutil
-sys.path.append(os.path.dirname(os.readlink(__file__)) + '/simplejson/')
+try:
+    sys.path.append(os.path.dirname(os.readlink(__file__)) + '/simplejson/')
+except OSError:
+    sys.path.append(os.path.dirname(__file__) + '/simplejson/')
+
 import simplejson as json
 
 CPM_HOME = os.path.expanduser('~/.cpm')
@@ -12,8 +16,8 @@ CPM_GIT = 'https://github.com/castisdev'
 def print_usage():
     print ''
     print 'Usage: cpm <command>'
-    print 'where <command> is one of: help, info, init, install, list, remove'
-    print 'cpm <cmd> -h    quick help on <cmd>'
+    print 'where <command> is one of:'
+    print '    help, info, init, install, list, remove, update'
 
 
 def print_init():
@@ -42,7 +46,7 @@ def install(pkg):
     check_init()
     path = CPM_HOME + '/' + pkg
     try:
-        install_from_svn(path, pkg)
+        install_from_git(path, pkg)
         if not os.path.exists(path + '/package.json'):
             print '[Error] package.json not exist.'
             raise IOError
@@ -59,7 +63,7 @@ def install(pkg):
         shutil.rmtree(path)
 
 
-def install_from_svn(path, pkg):
+def install_from_git(path, pkg):
     uri = '%s/%s.git' % (CPM_GIT, pkg)
     cmd = 'git clone --recursive %s %s' % (uri, path)
     print cmd
@@ -122,6 +126,19 @@ def remove_bins(path, bins):
         os.system(cmd)
 
 
+def update(pkg):
+    check_init()
+    path = CPM_HOME + '/' + pkg
+    try:
+        cmd = 'cd %s && git pull --recurse-submodules' % path
+        print cmd
+        r = os.system(cmd)
+        if r != 0:
+            print '[Error] command `%s` failed with code %d' % (cmd, r)
+    except OSError:
+        print '[Error] OSError occured. update failed'
+
+
 def main(argv):
     try:
         cmd = argv[1]
@@ -137,6 +154,8 @@ def main(argv):
             info(argv[2])
         elif cmd == 'remove':
             remove(argv[2])
+        elif cmd == 'update':
+            update(argv[2])
         else:
             print_usage()
     except IndexError:
