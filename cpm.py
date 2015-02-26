@@ -92,7 +92,7 @@ def list():
     for i, s in enumerate(pkgs):
         data = open('%s/%s/package.json' % (CPM_HOME, s))
         j = json.load(data)
-        print '%s %s@%s' % ('├── ' if i < len(pkgs) - 1 else '└── ', j['name'], j['version'])
+        print '%s %s@%s' % ((i < len(pkgs) - 1) and '├── ' or '└── ', j['name'], j['version'])
     print ''
 
 def info(pkg):
