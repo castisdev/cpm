@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sys
 import os
@@ -84,12 +85,15 @@ def install_bins(path, bins):
 
 def list():
     check_init()
-    for s in os.listdir(CPM_HOME):
-        if os.path.isdir(CPM_HOME + '/' + s):
-            data = open('%s/%s/package.json' % (CPM_HOME, s))
-            j = json.load(data)
-            print '%s@%s' % (j['name'], j['version'])
-
+    print CPM_HOME
+    pkgs = [s for s in os.listdir(CPM_HOME) if os.path.isdir(CPM_HOME + '/' + s)]
+    if not pkgs:
+        print '└── (empty)'
+    for i, s in enumerate(pkgs):
+        data = open('%s/%s/package.json' % (CPM_HOME, s))
+        j = json.load(data)
+        print '%s %s@%s' % ('├── ' if i < len(pkgs) - 1 else '└── ', j['name'], j['version'])
+    print ''
 
 def info(pkg):
     check_init()
