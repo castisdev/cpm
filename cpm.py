@@ -10,7 +10,7 @@ except OSError:
 
 import simplejson as json
 
-CPM_HOME = os.path.expanduser('~/.cpm')
+CPM_HOME = os.path.expanduser('~/.cpm/src')
 CPM_BIN = os.path.expanduser('~/.cpm/bin')
 CPM_GIT = 'https://github.com/castisdev'
 
