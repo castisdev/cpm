@@ -12,6 +12,7 @@ except OSError:
     sys.path.append(os.path.dirname(__file__) + '/simplejson/')
 
 import simplejson as json
+import commands
 
 CPM_HOME = os.path.expanduser('~/.cpm/src')
 CPM_BIN = os.path.expanduser('~/.cpm/bin')
@@ -146,6 +147,26 @@ def update(pkg):
         print '[Error] OSError occured. update failed'
 
 
+def search(word):
+    q = '%s+user:castisdev+filename:package.json' % word
+    url = 'https://api.github.com/search/code?q=%s' % q
+    try:
+        items = request_json(url)["items"]
+        print 'found %d package(s).' % len(items)
+        for item in items:
+            item_url = item['url']
+            download_url = request_json(item['url'])['download_url']
+            package = request_json(download_url)
+            print '%s@%s\t%s' % (package['name'], package['version'], package['description'])
+    except IndexError:
+        print '[Error] index error.'
+    print ''
+
+
+def request_json(url):
+    return json.loads(commands.getstatusoutput('wget -qO- --no-check-certificate ' + url)[1])
+
+
 def main(argv):
     try:
         cmd = argv[1]
@@ -163,6 +184,8 @@ def main(argv):
             remove(argv[2])
         elif cmd == 'update':
             update(argv[2])
+        elif cmd == 'search':
+            search(argv[2])
         else:
             print_usage()
     except IndexError:
